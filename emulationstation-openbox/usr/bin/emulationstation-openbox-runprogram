@@ -1,0 +1,3 @@
+#!/bin/bash
+emulationstation-openbox-runprogram.real "$@" &
+disown

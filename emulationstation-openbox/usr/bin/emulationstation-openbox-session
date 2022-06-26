@@ -1,0 +1,115 @@
+#!/bin/bash
+
+mkdir -p ~/.emulationstation-openbox
+mkdir -p ~/.emulationstation-openbox/tmp
+
+display=$(echo "${DISPLAY}" | tr ':' '_')
+
+ending=false
+
+function onquit
+{
+	if $ending
+	then
+		return;
+	fi
+	ending=true
+	echo "Caught signal $1"
+	if [ -a ~/.emulationstation-openbox/onkill ]
+	then
+		echo "running onkill script"
+		~/.emulationstation-openbox/onkill "$1"
+	fi
+	if [ -n "$kpid" ]
+	then
+		rm -f ~/.emulationstation-openbox/tmp/session-pid.$display
+	fi
+	exit 0
+}
+
+if [ ! -f ~/.emulationstation-openbox/onstart ]
+then
+	cat > ~/.emulationstation-openbox/onstart << EOF
+#!/bin/bash
+# Put some code here to run when a emulationstation-openbox session successfully starts
+EOF
+	chmod +x ~/.emulationstation-openbox/onstart
+fi
+
+if [ ! -f ~/.emulationstation-openbox/onfinish ]
+then
+	cat > ~/.emulationstation-openbox/onfinish << EOF
+#!/bin/bash
+# Put some code here to run when a emulationstation-openbox session ends
+EOF
+	chmod +x ~/.emulationstation-openbox/onfinish
+fi
+
+if [ ! -f ~/.emulationstation-openbox/onkill ]
+then
+	cat > ~/.emulationstation-openbox/onkill << EOF
+#!/bin/bash
+# Put some code here to run when a emulationstation-openbox session is sent a SIGINT, SIGTERM, or SIGQUIT
+EOF
+	chmod +x ~/.emulationstation-openbox/onkill
+fi
+
+(
+	flock -x -n 200 || (echo "only one session of emulationstation-openbox can be run at a time on a given display" && exit -2)
+
+	set -m
+
+	trap 'onquit "SIGINT"' SIGINT
+	trap 'onquit "SIGTERM"' SIGTERM
+	trap 'onquit "SIGQUIT"' SIGQUIT
+
+	openbox-session &
+	oppid=$!
+	rm -f ~/.emulationstation-openbox/tmp/program-running.$display
+	if [ -f ~/.emulationstation-openbox/onstart ]
+	then
+		~/.emulationstation-openbox/onstart
+	fi
+	while ps -p $oppid > /dev/null
+	do
+		if [ -f /opt/archypie/supplementary/emulationstation/emulationstation ]
+		then
+			/opt/archypie/supplementary/emulationstation/emulationstation &
+			kpid=$!
+		else
+			emulationstation &
+			kpid=$!
+		fi
+		echo "$kpid" > ~/.emulationstation-openbox/tmp/session-pid.$display
+		fg
+		rm -f ~/.emulationstation-openbox/tmp/session-pid.$display
+
+		if [ -f ~/.emulationstation-openbox/tmp/program-running.$display ]
+		then
+			lpid=$(cat ~/.emulationstation-openbox/tmp/program-running.$display)
+			rm -f ~/.emulationstation-openbox/tmp/program-running.$display
+			if [ -n "$lpid" ]
+			then
+				while [ -e /proc/$lpid ]; do
+					sleep 1
+				done
+			else
+				break
+			fi
+		else
+			break
+		fi
+	done
+	ending=true
+	openbox --exit
+	wait $oppid
+) 200>~/.emulationstation-openbox/tmp/displaylock.$display
+
+rm -f ~/.emulationstation-openbox/tmp/program-running.$display
+rm -f ~/.emulationstation-openbox/tmp/displaylock.$display
+
+if [ -f ~/.emulationstation-openbox/onfinish ]
+then
+	~/.emulationstation-openbox/onfinish
+fi
+

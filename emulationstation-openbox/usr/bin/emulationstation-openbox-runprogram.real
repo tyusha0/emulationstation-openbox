@@ -1,0 +1,16 @@
+#!/bin/bash
+mkdir -p ~/.emulationstation-openbox
+mkdir -p ~/.emulationstation-openbox/tmp
+display=$(echo "${DISPLAY}" | tr ':' '_')
+echo $$ > ~/.emulationstation-openbox/tmp/program-running.$display
+kpid=$(cat ~/.emulationstation-openbox/tmp/session-pid.$display)
+if [ -n "$kpid" ]
+then
+	echo "closing emulationstation"
+	kill -9 $kpid
+fi
+echo "running program"
+eval "$@"
+eval_result=$?
+echo "finished running program"
+exit $eval_result
