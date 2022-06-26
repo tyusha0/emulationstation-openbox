@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Emulationstation Openbox
+Comment=This session will start Emulationstation on top of an Openbox session
+Exec=/usr/bin/emulationstation-openbox-session
+Type=Application

@@ -1,0 +1,9 @@
+Package: emulationstation-openbox
+Version: 1.0.5
+Section: base
+Priority: optional
+Architecture: all
+Depends: bash, openbox, kodi
+Maintainer: Anton Artyushakevich <htovver@gmail.com>
+Description: An xsession that runs Emulationstation on top of an Openbox session
+

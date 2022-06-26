@@ -1,5 +1,5 @@
-# kodi-openbox
-An xsession that runs Kodi media center on top of an Openbox session
+# emulationstation-openbox
+An xsession that runs Emulationstation on top of an Openbox session
 
 ## Install
 
@@ -7,7 +7,7 @@ An xsession that runs Kodi media center on top of an Openbox session
 
 ```bash
 ./build.sh
-sudo dpkg -i kodi-openbox.deb
+sudo dpkg -i emulationstation-openbox.deb
 ```
 
 **Arch distros**
@@ -15,7 +15,7 @@ sudo dpkg -i kodi-openbox.deb
 ```bash
 sudo pacman -S fakeroot dpkg debtap
 ./build.sh
-debtap kodi-openbox.deb
+debtap emulationstation-openbox.deb
 ```
 
 This will return an Arch package that can be installed with your favorite package manager, (Pacman, Octopi, Pamac, etc).
@@ -26,17 +26,17 @@ This will return an Arch package that can be installed with your favorite packag
 Note, this command manually copies all files to their intended places in the filesystem, meaning they will need to be uninstalled manually.
 
 ```bash
-sudo cp -r -t /usr kodi-openbox/usr/**/*
+sudo cp -r -t /usr emulationstation-openbox/usr/**/*
 ```
 
 ## Usage
 
-On most systems, you should be able to choose your X session at the login screen. Choose "Kodi Openbox" and log in to start the session.
+On most systems, you should be able to choose your X session at the login screen. Choose "Emulationstation Openbox" and log in to start the session.
 
 ### Commands
 
-* **kodi-openbox-session** - runs a kodi-openbox session
-* **kodi-openbox-runprogram** - closes kodi and runs a command. Kodi will reopen when the command completes. Arguments are the command to run
+* **emulationstation-openbox-session** - runs a emulationstation-openbox session
+* **emulationstation-openbox-runprogram** - closes emulationstation and runs a command. Emulationstation will reopen when the command completes. Arguments are the command to run
 
 ### Openbox background
 To set the background color of your openbox session, add the following command to *~/.config/openbox/autostart.sh*
@@ -45,13 +45,13 @@ xsetroot -solid '#000000'
 ```
 This will set the openbox background color to black, but you can change the hex value to be any color.
 
-### Launching external programs from kodi
-There are various kodi addons for launching external programs, but the one I tend to use is [Advanced Launcher](http://kodi.wiki/view/Add-on:Advanced_Launcher). If you want kodi to close when launching an external program, use the **kodi-openbox-runprogram** command as your program, and the command you want to run as its arguments.
+### Launching external programs from emulationstation
+If you want emulationstation to close when launching an external program, use the **emulationstation-openbox-runprogram** command as your program, and the command you want to run as its arguments.
 
 ### Preventing display sleep in external programs
-If your display keeps going to sleep outside of kodi, it may be caused by a number of different programs.
+If your display keeps going to sleep outside of emulationstation, it may be caused by a number of different programs.
 
-To prevent gnome desktop from putting your display to sleep, run the following commands in a terminal while logged in as your kodi user:
+To prevent gnome desktop from putting your display to sleep, run the following commands in a terminal while logged in as your emulationstation user:
 ``` bash
 # Prevent display from going to sleep
 gsettings set org.gnome.desktop.session idle-delay 0
